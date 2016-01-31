@@ -22,13 +22,10 @@ subtest basic => sub {
 };
 
 subtest specific_version => sub {
-    TODO: {
-        local $TODO = "Fails to resolve older version";
-        my $r = cpm_with_cpanfile(q{requires "App::FatPacker", "==0.009018";});
-        like $r->err, qr/^DONE install App-FatPacker-0.009018/m;
-        like $r->err, qr/1 distribution installed/;
-        ok -f $r->local . "/bin/fatpack";
-    };
+    my $r = cpm_with_cpanfile(q{requires "App::FatPacker", "==0.009018";});
+    like $r->err, qr/^DONE install App-FatPacker-0.009018/m;
+    like $r->err, qr/1 distribution installed/;
+    ok -f $r->local . "/bin/fatpack";
 };
 
 subtest range => sub {

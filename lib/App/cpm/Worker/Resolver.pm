@@ -16,23 +16,24 @@ sub new {
 sub work {
     my ($self, $job) = @_;
     my $res = $self->{ua}->get( "$self->{cpanmetadb}/$job->{package}" );
-    if ($res->{success}) {
-        my $yaml = CPAN::Meta::YAML->read_string($res->{content});
-        my $meta = $yaml->[0];
-        my $version = $meta->{version} eq "undef" ? 0 : $meta->{version};
-        if (my $req_version = $job->{version}) {
-            unless (App::cpm::Version->satisfied($job->{package}, $version, $req_version)) {
-                warn "-> Couldn't find $job->{package} $req_version (only found $version)\n";
-                return { ok => 0 };
-            }
-        }
-        return {
-            ok => 1,
-            distfile => $meta->{distfile},
-            version => $meta->{version},
-            provide => +{package => $job->{package}, version => $version},
-        };
+    if (!$res->{success}) {
+        return { ok => 0 };
     }
+
+    foreach my $line ( split /\n/, $res->{content} ) {
+        my ($package, $meta_version, $distfile) = split /\s+/, $line;
+        my $version = $meta_version eq "undef" ? 0 : $meta_version;
+
+        if (App::cpm::Version->satisfied( $package, $version, $job->{version} )) {
+            return {
+                ok => 1,
+                distfile => $distfile,
+                version => $meta_version,
+                provide => +{package => $package, version => $version},
+            };
+        }
+    }
+    warn "-> Couldn't find $job->{package} $job->{version}\n";
     return { ok => 0 };
 }
 

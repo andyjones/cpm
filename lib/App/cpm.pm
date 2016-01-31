@@ -20,7 +20,7 @@ sub new {
         snapshot => "cpanfile.snapshot",
         cpanfile => "cpanfile",
         local_lib => "local",
-        cpanmetadb => "http://cpanmetadb.plackperl.org/v1.0/package",
+        cpanmetadb => "http://cpanmetadb.plackperl.org/v1.0/history",
         mirror => "http://www.cpan.org",
         target_perl => $],
         %option
