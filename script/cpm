@@ -48,6 +48,8 @@ cpm - a fast cpan module installer
         turn on/off color output, default: on
       --test, --no-test
         run test cases, default: no
+      --cpanfile=FILENAME
+        Alternative path to cpanfile, default: cpanfile
   -V, --version
         show version
   -h, --help
