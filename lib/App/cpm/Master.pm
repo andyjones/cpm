@@ -5,6 +5,7 @@ use utf8;
 use App::cpm::Distribution;
 use App::cpm::Job;
 use App::cpm::Logger;
+use App::cpm::Version;
 use IO::Handle;
 use IO::Select;
 use Module::CoreList;
@@ -273,8 +274,7 @@ sub is_installed {
     my ($self, $package, $version) = @_;
     my $info = Module::Metadata->new_from_module($package, inc => $self->{user_inc});
     return unless $info;
-    return 1 unless $version;
-    version->parse($version) <= version->parse($info->version);
+    return App::cpm::Version->satisfied($package, $info->version, $version);
 }
 
 sub is_core {
@@ -293,10 +293,8 @@ sub is_core {
             }
             return;
         }
-        return 1 unless $version;
         my $core_version = $Module::CoreList::version{$target_perl}{$package};
-        return unless $core_version;
-        return version->parse($version) <= version->parse($core_version);
+        return App::cpm::Version->satisfied($package, $core_version, $version);
     }
     return;
 }
